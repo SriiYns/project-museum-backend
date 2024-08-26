@@ -133,6 +133,47 @@ const destroy = async (req, res) => {
 	}
 };
 
+//kode untuk historu collection
+const HistoryQRCollection = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const collection = await Collection.findById(id);
+		if (!collection) {
+			return res.status(404).json({
+				message: 'Collection not found.',
+			});
+		}
+
+		const mapper = (key, value) => {
+			if (value === collection[key]) return;
+			return CloudinaryController.deleteSingle(collection[key]);
+		};
+
+		const { image, audio_id, audio_en, audio_sasak, ...rest } = req.body;
+		const promises = [
+			mapper('image', image),
+			mapper('audio_id', audio_id),
+			mapper('audio_en', audio_en),
+			mapper('audio_sasak', audio_sasak),
+		];
+
+		await Promise.all(promises.filter(Boolean));
+		const updated = await Collection.findByIdAndUpdate(id, req.body);
+
+		res.status(200).json({
+			message: 'Collection updated successfully.',
+			data: updated,
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: 'An error occurred while updating collection.',
+			error: error.message,
+		});
+		console.log(error);
+	}
+};
+
 module.exports = {
 	index,
 	store,

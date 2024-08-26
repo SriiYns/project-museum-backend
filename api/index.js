@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const userRouter = require('../routes/user.routes');
 const uploadRouter = require('../routes/upload.routes');
 const collectionRouter = require('../routes/collection.routes');
+const historyScanCollectionRoutes = require('../routes/historyScanCollection.routes');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 app.use('/users', userRouter);
 app.use('/uploads', uploadRouter);
 app.use('/collections', collectionRouter);
+app.use('/historyScanCollection', historyScanCollectionRoutes);
 
 app.get('*', (req, res) => {
 	res.status(404).json({
